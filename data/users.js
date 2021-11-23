@@ -6,13 +6,23 @@ const addUser = (login, clave, nombre_completo, telefono, email, genero, admin )
         return false;
     } else {
         return new Promise((resolve, reject) => {
-            conn.query('INSERT INTO users (login, clave, nombre_completo, telefono, email, genero, admin) VALUES (?, ?, ?, ?, ?, ?, ?)', [login, clave, nombre_completo, telefono, email, genero, admin], (err, res) => {
-                if(err) {
-                    reject(err)
-                } else {
-                    resolve("Usuario creado con éxito!")
-                }
-            })
+            // Si ADMIN o GENERO no es ni cero ni uno no pasa
+            if (admin > 1) {
+                reject("El valor de administrador debe ser 1 o 0.");
+            } else if (genero > 1) {
+                reject("El valor de género debe ser 1 para mujer, o 0 para hombre.")
+            // Valida con una regexp que el mail sea valido
+            } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+                reject("El email ingresado es inválido.");
+            } else {
+                conn.query('INSERT INTO users (login, clave, nombre_completo, telefono, email, genero, admin) VALUES (?, ?, ?, ?, ?, ?, ?)', [login, clave, nombre_completo, telefono, email, genero, admin], (err, res) => {
+                    if(err) {
+                        reject(err)
+                    } else {
+                        resolve("Usuario creado con éxito!")
+                    }
+                })
+            }
         })
     }
 }
@@ -30,7 +40,7 @@ const findUserByLogin = (login) => {
         });
     });
 }
-
+// Busca un usuario en la base de datos por su ID
 const findUserById = (id) => {
     return new Promise((resolve, reject) => {
         conn.query("SELECT * FROM users WHERE idusuario = '" + id + "'", function(err, rows, fields) {
@@ -64,10 +74,22 @@ const getUsers = () => {
 // Recibe una ID y un objeto y actualiza el usuario en la base de datos
 const updateUser = (idusuario, datos) => {
     return new Promise((resolve, reject) => {
-        conn.query("UPDATE users SET ? WHERE idusuario = ?", [datos, idusuario], function(err, rows, fields) {
-            if (err) throw err;
-            resolve("Usuario actualizado con éxito!");
-        });
+        // Valida los datos a ingresar
+        // Si admin o genero es mayor a 1 no pasa
+        console.log(datos.email)
+        if (datos.admin > 1) {
+            reject("El valor de administrador debe ser 1 o 0.");
+        } else if (datos.genero > 1) {
+            reject("El valor de género debe ser 1 para mujer, o 0 para hombre.")
+        // Valida con una regexp que el mail sea valido
+        } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(datos.email)) {
+            reject("El email ingresado es inválido.");
+        } else {
+            conn.query("UPDATE users SET ? WHERE idusuario = ?", [datos, idusuario], function(err, rows, fields) {
+                if (err) throw err;
+                resolve("Usuario actualizado con éxito!");
+            });
+        }
     });
 }
 

@@ -4,7 +4,7 @@ const data = require('../data/users')
 
 // Lista los usuarios que vienen de la base de datos
 router.get('/', (req, res) => {
-    let usuarios = data.getUsers().then(usuarios => {
+    data.getUsers().then(usuarios => {
         res.json(usuarios)
     }).catch(err => {
         res.json({
@@ -32,10 +32,10 @@ router.patch('/modificar/:id', (req, res) => {
         data.updateUser(id, usuario).then(() => {
           res.status(200).send("Usuario modificado exitosamente")
         }).catch(err => {
-          res.status(500).send("Error actualizando usuario")
+          res.status(500).send("Error actualizando usuario: " + err)
         })
       }}).catch(err => {
-        res.status(500).send("Error buscando usuario")
+        res.status(500).send("Error buscando usuario: " + err)
       })
 });
 
@@ -47,18 +47,15 @@ router.post('/agregar/', function(req, res, next) {
     // busca al usuario en la base de datos segun su login
     data.findUserByLogin(req.body.login).then(user => {
       if(user) res.status(400).send("El usuario ya existe")
-    }).catch(err => { // si no existe el usuario lo crea y lo agrega a la base de datos
+    }).catch(err => { // si no existe ese login, lo crea y lo agrega a la base de datos
       data.addUser(req.body.login, req.body.clave, req.body.nombre_completo, req.body.telefono, req.body.email, req.body.genero, req.body.admin).then(mensaje => {
         res.status(200).send(mensaje)
         res.end()
       }).catch(err => {
-        res.json({
-          error: err
-        })
+        res.status(500).send(err)
       })
     })
   }
 });
-
 
 module.exports = router;
