@@ -14,6 +14,8 @@ router.post('/login/', async (req, res) => {
   
   data.findUserByLogin(login).then(user => {
     if (user.clave === clave) {
+      const token = data.generateAuthToken(user);
+      console.log(token)
       res.status(200);
       res.send(user);
     } else {
@@ -22,9 +24,8 @@ router.post('/login/', async (req, res) => {
     }
   }).catch(err => {
     res.status(404);
-    res.send('Usuario o clave incorrectos!');
+    res.send("Error al buscar usuario:" + err);
   })
-
 });
 
 module.exports = router;

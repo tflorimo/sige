@@ -1,5 +1,5 @@
 const conn = require('./connection')
-
+const jwt =require('jsonwebtoken') ;
 // Agrega un nuevo usuario a la base de datos, previo valida que existan todos los campos
 const addUser = (login, clave, nombre_completo, telefono, email, genero, admin ) => {
     if(!login || !clave || !nombre_completo || !telefono || !email || !genero || !admin) {
@@ -30,7 +30,7 @@ const addUser = (login, clave, nombre_completo, telefono, email, genero, admin )
 // Busca un usuario en la base de datos por su login
 const findUserByLogin = (login) => {
     return new Promise((resolve, reject) => {
-        conn.query("SELECT login, clave FROM users WHERE login = '" + login + "'", function(err, rows, fields) {
+        conn.query("SELECT idusuario, login, clave, admin FROM users WHERE login = '" + login + "'", function(err, rows, fields) {
             if (err) throw err;
             if(rows.length > 0) {
                 resolve(rows[0]);
@@ -93,4 +93,16 @@ const updateUser = (idusuario, datos) => {
     });
 }
 
-module.exports = { addUser, getUsers, findUserByLogin, updateUser, findUserById }
+function generateAuthToken(user) {
+	let secret = process.env.SECRET;
+    console.log("genera token")
+	if (user.admin == 1) {
+        secret = process.env.SECRET_ADMIN;
+        console.log("es admin")
+	}
+    const token = jwt.sign({ id: user.idusuario, login: user.login, admin: user.admin }, secret, { expiresIn: '1h' });
+    console.log("token: " + token)
+	return token;
+}
+
+module.exports = { addUser, getUsers, findUserByLogin, updateUser, findUserById, generateAuthToken }

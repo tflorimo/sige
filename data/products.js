@@ -41,19 +41,84 @@ const getProductoById = (id) => {
                     resolve(rows);
                 }
             } else {
-                reject(false);
+                reject("No se encontraron productos con ese ID");
             }
         });
     });
 }
 
 // Agrega un producto en la base de datos
-const addProducto = () => {
-    
+const addProducto = (datos) => {
+    return new Promise((resolve, reject) => {
+        conn.query("INSERT INTO productos SET ?", datos, function(err, rows, fields) {
+            if (err) reject(err);
+            resolve("Producto agregado con éxito!");
+        });
+    });
+}
+
+// Modifica un producto en la base de datos por su ID y los datos enviados por parámetros
+const updateProducto = (id, datos) => {
+    return new Promise((resolve, reject) => {
+        if(datos.precio == 0){
+            reject("El precio no puede ser 0");
+        } else if(datos.idcategoria == 0){
+            reject("Debe ingresar un ID de categoría válido");
+        } else if(datos.descrip == " "){
+            reject("Debe ingresar una descripción de producto.");
+        } else {
+            conn.query("UPDATE productos SET ? WHERE idproducto = '" + id + "'", datos, function(err, rows, fields) {
+                if (err) throw err;
+                if(rows.affectedRows > 0) {
+                    resolve("Producto modificado con éxito!");
+                } else {
+                    reject("No se encontró el producto con ese ID");
+                }
+            });
+        }
+    });
+}
+
+// Resta {parametro} stock del producto {id}
+const buyProduct = (id, stock) => {
+    return new Promise((resolve, reject) => {
+        conn.query("UPDATE productos SET stock_disponible = stock_disponible - " + stock + " WHERE idproducto = '" + id + "'", function(err, rows, fields) {
+            if (err) reject(err);
+            resolve("Producto comprado con éxito!");
+        });
+    });
+
+}
+
+const addCategoria = (categoria) => {
+    return new Promise((resolve, reject) => {
+        conn.query("INSERT INTO productos_categorias SET descrip = '" + categoria + "'", function(err, rows, fields) {
+            if (err) reject(err);
+            resolve("Categoría agregada con éxito!");
+        });
+    });
+}
+
+const getCategorias = () => {
+    return new Promise((resolve, reject) => {
+        conn.query("SELECT * FROM productos_categorias", function(err, rows, fields) {
+            if (err) reject(err);
+            if(rows.length > 0) {
+                resolve(rows);
+            } else {
+                reject("No hay categorías!")
+            }
+        });
+    });
 }
 
 module.exports = {
     getProductos,
     getProductoById,
+    updateProducto,
+    addProducto,
+    addCategoria,
+    getCategorias,
+    buyProduct,
     getProductosByCategoria
 }
