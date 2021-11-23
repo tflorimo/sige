@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 });
 
 // Modifica un usuario segun el id que envía en parámetros
-router.patch('/modificar/:id',authAdmin, (req, res) => {
+router.patch('/modificar/:id', (req, res) => {
     let id = req.params.id
     let datos = req.body
 
@@ -41,7 +41,7 @@ router.patch('/modificar/:id',authAdmin, (req, res) => {
 });
 
 // Valida que esten todos los campos y agrega al usuario mientras que no se repita el login
-router.post('/agregar/',authAdmin, function(req, res, next) {
+router.post('/agregar/', function(req, res, next) {
   if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
     res.status(400).send("Faltan campos para crear el usuario")
   } else {
