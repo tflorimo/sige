@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const data = require('../data/products')
 
-// Lista todos los productos y su categoria
+// Lista todos los productos QUE TENGAN STOCK y su categoria
 router.get('/', (req, res) => {
     data.getProductos().then(productos => {
         res.status(200).json(productos)
@@ -25,10 +25,8 @@ router.get('/:idproducto', (req, res) => {
     data.getProductoById(req.params.idproducto).then(producto => {
         res.status(200).json(producto)
     }).catch(err => {
-        res.status(404).send("No se encontro el producto")
+        res.status(404).send(err)
     })
 });
-
-// Lista los productos y su categoria segun la categoria que envía en parámetros
 
 module.exports = router;

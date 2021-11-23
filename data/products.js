@@ -1,9 +1,9 @@
 const conn = require('./connection')
 
-// Lista a todos los productos y su categoria
+// Lista a todos los productos y su categoria, si no tiene stock, lo excluye en la query
 const getProductos = () => {
     return new Promise((resolve, reject) => {
-        conn.query("SELECT * FROM productos", function(err, rows, fields) {
+        conn.query("SELECT * FROM productos WHERE stock_disponible > 0", function(err, rows, fields) {
             if (err) throw err;
             if(rows.length > 0) {
                 resolve(rows);
@@ -35,7 +35,11 @@ const getProductoById = (id) => {
         conn.query("SELECT * FROM productos WHERE idproducto = '" + id + "'", function(err, rows, fields) {
             if (err) throw err;
             if(rows.length > 0) {
-                resolve(rows);
+                if(rows[0].stock_disponible == 0){
+                    reject("No hay stock del producto " + rows[0].descrip);
+                } else {
+                    resolve(rows);
+                }
             } else {
                 reject(false);
             }
