@@ -2,10 +2,10 @@ const conn = require('./connection')
 const jwt =require('jsonwebtoken') ;
 // Agrega un nuevo usuario a la base de datos, previo valida que existan todos los campos
 const addUser = (login, clave, nombre_completo, telefono, email, genero, admin ) => {
-    if(!login || !clave || !nombre_completo || !telefono || !email || !genero || !admin) {
-        return false;
-    } else {
-        return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+        if(!login || !clave || !nombre_completo || !telefono || !email || !genero || !admin) {
+            reject("Debe ingresar todos los campos!");
+        } else {
             // Si ADMIN o GENERO no es ni cero ni uno no pasa
             if (admin > 1) {
                 reject("El valor de administrador debe ser 1 o 0.");
@@ -23,8 +23,8 @@ const addUser = (login, clave, nombre_completo, telefono, email, genero, admin )
                     }
                 })
             }
-        })
-    }
+        }
+    })
 }
 
 // Busca un usuario en la base de datos por su login

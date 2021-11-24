@@ -53,7 +53,7 @@ router.post('/agregar/', function(req, res, next) {
         res.status(200).send(mensaje)
         res.end()
       }).catch(err => {
-        res.status(500).send(err)
+        res.status(400).send(err)
       })
     })
   }
