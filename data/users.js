@@ -1,5 +1,18 @@
 const conn = require('./connection')
 const jwt =require('jsonwebtoken') ;
+
+
+class User {
+    constructor(login, clave, nombre_completo, email, genero, admin) {
+        this.login = login;
+        this.clave = clave;
+        this.nombre_completo = nombre_completo;
+        this.email = email;
+        this.genero = genero;
+        this.admin = admin;
+    }
+}
+
 // Agrega un nuevo usuario a la base de datos, previo valida que existan todos los campos
 const addUser = (login, clave, nombre_completo, telefono, email, genero, admin ) => {
     return new Promise((resolve, reject) => {
@@ -105,4 +118,4 @@ function generateAuthToken(user) {
 	return token;
 }
 
-module.exports = { addUser, getUsers, findUserByLogin, updateUser, findUserById, generateAuthToken }
+module.exports = { addUser, getUsers, findUserByLogin, updateUser, findUserById, generateAuthToken, User }

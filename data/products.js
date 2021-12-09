@@ -8,7 +8,7 @@ const getProductos = () => {
             if(rows.length > 0) {
                 resolve(rows);
             } else {
-                reject(false);
+                reject("No se encontraron productos");
             }
         });
     });
@@ -23,7 +23,7 @@ const getProductosByCategoria = (categoria) => {
             if(rows.length > 0) {
                 resolve(rows);
             } else {
-                reject(false);
+                reject("No se encontraron productos para esa categoria");
             }
         });
     });
