@@ -2,17 +2,6 @@ const conn = require('./connection')
 
 // Clase user para el manejo de usuarios
 class User {
-
-    constructor(login, clave, nombre_completo, telefono, email, genero, admin) {
-        this.login = login
-        this.clave = clave
-        this.nombre_completo = nombre_completo
-        this.telefono = telefono
-        this.email = email
-        this.genero = genero
-        this.admin = admin
-    }
-
     // Agrega un nuevo usuario a la base de datos, previo valida que existan todos los campos
     addUser = (params) => {
         return new Promise((resolve, reject) => {
