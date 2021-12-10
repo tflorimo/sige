@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const data = require('../data/users');
+const Usuario = require('../service/users');
 const { authAdmin } = require('../middleware/auth');
 
 // Lista los usuarios que vienen de la base de datos
@@ -45,17 +45,24 @@ router.post('/agregar/', function(req, res, next) {
   if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
     res.status(400).send("Faltan campos para crear el usuario")
   } else {
-    // busca al usuario en la base de datos segun su login
-    data.findUserByLogin(req.body.login).then(user => {
-      if(user) res.status(400).send("El usuario ya existe")
-    }).catch(err => { // si no existe ese login, lo crea y lo agrega a la base de datos
-      data.addUser(req.body.login, req.body.clave, req.body.nombre_completo, req.body.telefono, req.body.email, req.body.genero, req.body.admin).then(mensaje => {
-        res.status(200).send(mensaje)
-        res.end()
-      }).catch(err => {
-        res.status(400).send(err)
-      })
+    
+    let user = {
+      login: req.body.login,
+      clave: req.body.clave,
+      telefono: req.body.telefono,
+      nombre_completo: req.body.nombre_completo,
+      email: req.body.email,
+      genero: req.body.genero,
+      admin: req.body.admin
+    }  
+
+    Usuario.registrarUsuario(user)
+      .then(() => {
+      res.status(200).send("Usuario creado exitosamente")
+    }).catch(err => {
+      res.status(500).send("Error creando usuario: " + err)
     })
+
   }
 });
 

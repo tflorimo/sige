@@ -1,0 +1,40 @@
+
+// Capa de SERVICIO que se encarga de la logica de negocio de los Usuarios
+
+const User = require('../data/users');
+const userModel = new User();
+
+
+/**
+ * Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, crea un nuevo usuario
+ * El usuario no debe existir en la base de datos, de lo contrario se lanzará un error
+ */
+function registrarUsuario(params){
+    
+    // return userModel.addUser ??
+
+    return new Promise((resolve, reject) => {
+        
+        userModel.findUserByLogin(params.login)
+        .then(user => {
+            if(user){
+                reject("El usuario ya existe");
+            }else{
+                userModel.addUser(params)
+                .then(user => {
+                    resolve("Usuario creado exitosamente");
+                })
+                .catch(err => {
+                    reject(err);
+                })
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
+module.exports = {
+    registrarUsuario
+}
