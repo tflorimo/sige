@@ -68,8 +68,63 @@ const buscarProducto = (idproducto) => {
     })
 }
 
-const crearProducto = () => {
-    
+const cargarProducto = (params) => {
+
+    return new Promise((resolve, reject) => {
+        productModel.addProducto(params).then(() => {
+            resolve("Producto agregado exitosamente.")
+        }).catch(err => {
+            reject(err);
+        })
+    })
+
+}
+
+const agregarCategoria = (params) => {
+
+    return new Promise((resolve, reject) => {
+        productModel.addCategoria(params).then(() => {
+            resolve("Categoria agregada exitosamente.")
+        }).catch(err => {
+            reject(err);
+        })
+    })
+}
+
+const actualizarProducto = (id, params) => {
+    return new Promise((resolve, reject) => {
+
+        console.log(params);
+        
+        if(params.descrip && !validarDescripcion(params.descrip)) {
+            reject("Se espera que la descripcion del producto sea de tipo String y que su longitud sea mayor a 2 caracteres.");
+        }
+        productModel.getProductoById(id)
+        .then(producto => {
+            if(producto) {
+                productModel.updateProducto(id, params)
+                .then(producto => {
+                    resolve("Producto actualizado exitosamente.")
+                })
+                .catch(err => {
+                    reject(err);
+                })
+            } else {
+                reject("No existe un producto con esa ID.");
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
+
+const validarDescripcion = (descrip) => {
+    if(typeof descrip != "string" || descrip.length < 2) {
+        return false;
+    }
+    return true;
 }
 
 module.exports = {
@@ -77,5 +132,8 @@ module.exports = {
     listarCategorias,
     obtenerCategoria,
     buscarProducto,
+    cargarProducto,
+    agregarCategoria,
+    actualizarProducto,
     listarProductosPorCategoria
 }

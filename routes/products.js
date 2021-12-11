@@ -91,59 +91,58 @@ router.post('/', (req, res) => {
     if(Object.keys(req.body).length < 4){
         res.status(400).send("Faltan datos")
     } else {
-        if(datos.descrip && datos.precio && datos.idcategoria && datos.stock_disponible){
-            data.addProducto(datos).then(() => {
-                res.status(200).send("Producto creado exitosamente")
-            }).catch(err => {
-                res.status(500).send("Error creando producto: " + err)
-            })
-        } else {
-            res.status(400).send("Error: Faltan datos")
+        let producto = {
+            descrip: datos.descrip,
+            idcategoria: datos.idcategoria,
+            precio: datos.precio, 
+            stock_disponible: datos.stock_disponible
         }
+        // la restriccion de carga de productos indica que no pueden repetirse para la misma descripcion y categoría
+        Producto.cargarProducto(producto).then(() => {
+            res.status(200).send("Producto cargado exitosamente.")
+        }).catch(err => {
+            res.status(500).send("Error cargando producto: " + err);
+        })
     }
 });
 
 // Agrega una categoria
-router.post('/categoria/agregar/', (req, res) => {
+router.post('/categoria/', (req, res) => {
     let datos = req.body
     if(Object.keys(req.body).length < 1){
         res.status(400).send("Faltan datos")
     } else {
-        if(datos.descrip){
-            data.addCategoria(datos.descrip).then(() => {
-                res.status(200).send("Categoria creada exitosamente")
-            }).catch(err => {
-                res.status(500).send("Error creando categoria: " + err)
-            })
-        } else {
-            res.status(400).send("Error: Faltan datos")
+        let categoria = {descrip: datos.descrip}
+        Producto.agregarCategoria(categoria).then(() => {
+            res.status(200).send("Categoria cargada exitosamente.")
         }
+        ).catch(err => {
+            res.status(500).send("Error cargando categoria: " + err);
+        })
     }
 });
 
 // PATCHES
 
 // Modifica un producto segun su ID y el contenido del body
-router.patch('/modificar/:id', (req, res) => {
+router.patch('/:id', (req, res) => {
     let id = req.params.id
     let datos = req.body
 
-    data.getProductoById(id).then(productoModificado => {   
-      if(productoModificado.length > 0){
-        let producto = {
-          descrip: datos.descrip || productoModificado[0].descrip,
-          precio: datos.precio || productoModificado[0].precio,
-          idcategoria: datos.idcategoria || productoModificado[0].idcategoria,
-          stock_disponible: datos.stock_disponible || productoModificado[0].stock_disponible
-        } 
-        data.updateProducto(id, producto).then(() => {
-            res.status(200).send("Producto modificado exitosamente")
-        }).catch(err => {
-            res.status(500).send("Error actualizando producto: " + err)
-        })
-      }}).catch(err => {
-        res.status(500).send("Error buscando producto: " + err)
-      })
+    let product = {
+        ...datos.descrip ? {descrip: datos.descrip} : {},
+        ...datos.idcategoria ? {idcategoria: datos.idcategoria} : {},
+        ...datos.precio ? {precio: datos.precio} : {},
+        ...datos.stock_disponible ? {stock_disponible: datos.stock_disponible} : {}
+    }
+
+    Producto.actualizarProducto(id, product).then(() => {
+        res.status(200).send("Producto modificado exitosamente.")
+    }).catch(err => {
+        res.status(500).send("Error modificando producto: " + err);
+    })
 });
+
+// Actualiza una categoria
 
 module.exports = router;

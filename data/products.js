@@ -39,7 +39,7 @@ class Producto {
                 if (err) {
                     reject(err);
                 } else if(rows.length > 0) {
-                    if(rows[0].stock_disponible == 0){
+                    if(rows[0].stock_disponible == 0){ // esto sirve para que no se pueda modificar el producto si no tiene stock (no tendría sentido)
                         reject("No hay stock del producto " + rows[0].descrip);
                     } else {
                         resolve(rows);
@@ -54,11 +54,22 @@ class Producto {
     // Agrega un producto en la base de datos
     addProducto = (datos) => {
         return new Promise((resolve, reject) => {
-            conn.query("INSERT INTO productos SET ?", datos, function(err, rows, fields) {
-                if (err) reject(err);
-                resolve("Producto agregado con éxito!");
+
+            let sql = "SELECT idcategoria, descrip FROM productos WHERE descrip LIKE '" + datos.descrip + "' AND idcategoria = " + datos.idcategoria;
+
+            conn.query(sql, function(err, rows, fields) {
+                if (err) {
+                    reject(err);
+                } else if(rows.length > 0) {
+                    reject("Ya existe un producto con ese nombre en esa categoria");
+                } else {
+                    conn.query("INSERT INTO productos SET ?", datos, function(err, rows, fields) {
+                        if (err) reject(err);
+                        resolve("Producto agregado con éxito!");
+                    });
+                }
             });
-        });
+        })
     }
 
     // Modifica un producto en la base de datos por su ID y los datos enviados por parámetros
@@ -72,8 +83,9 @@ class Producto {
                 reject("Debe ingresar una descripción de producto.");
             } else {
                 conn.query("UPDATE productos SET ? WHERE idproducto = '" + id + "'", datos, function(err, rows, fields) {
-                    if (err) throw err;
-                    if(rows.affectedRows > 0) {
+                    if (err) {
+                        reject(err);
+                    } else if(rows.affectedRows > 0) {
                         resolve("Producto modificado con éxito!");
                     } else {
                         reject("No se encontró el producto con ese ID");
@@ -95,11 +107,22 @@ class Producto {
     }
 
     //
-    addCategoria = (categoria) => {
+    addCategoria = (datos) => {
         return new Promise((resolve, reject) => {
-            conn.query("INSERT INTO productos_categorias SET descrip = '" + categoria + "'", function(err, rows, fields) {
-                if (err) reject(err);
-                resolve("Categoría agregada con éxito!");
+
+            let sql = "SELECT idcategoria, descrip FROM productos_categorias WHERE descrip LIKE '" + datos.descrip + "'";
+
+            conn.query(sql, function(err, rows, fields) {
+                if(err){
+                    reject(err);
+                } else if (rows.length > 0) {
+                    reject("Ya existe una categoría con ese nombre");
+                } else {
+                    conn.query("INSERT INTO productos_categorias SET descrip = '" + datos.descrip + "'", function(err, rows, fields) {
+                        if (err) reject(err);
+                        resolve("Categoría agregada con éxito!");
+                    });
+                }
             });
         });
     }
