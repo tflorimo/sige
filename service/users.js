@@ -11,8 +11,6 @@ const userModel = new User();
  */
 function registrarUsuario(params){
     
-    // return userModel.addUser ??
-
     return new Promise((resolve, reject) => {
         
         userModel.findUserByLogin(params.login)
@@ -35,6 +33,33 @@ function registrarUsuario(params){
     })
 }
 
+/**
+ * Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, actualiza los datos de un usuario
+ * Para actualizarlo, primero debe encontrarlo por el id que se le pasa como parámetro
+ */
+function actualizarUsuario(id, params){
+    return new Promise((resolve, reject) => {
+        userModel.findUserById(id)
+        .then(user => {
+            if(user){
+                userModel.updateUser(id, params)
+                .then(user => {
+                    resolve("Usuario actualizado exitosamente");
+                })
+                .catch(err => {
+                    reject(err);
+                })
+            } else {
+                reject("No se encontró un usuario con ese ID.");
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
 module.exports = {
-    registrarUsuario
+    registrarUsuario,
+    actualizarUsuario
 }

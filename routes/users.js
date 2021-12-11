@@ -15,33 +15,28 @@ router.get('/', (req, res) => {
 });
 
 // Modifica un usuario segun el id que envía en parámetros
-router.patch('/modificar/:id', (req, res) => {
-    let id = req.params.id
-    let datos = req.body
+router.patch('/:id', (req, res) => {
+    let id = req.params.id;
+    let user = {
+      ...req.body.login ? {login: req.body.login} : {},
+      ...req.body.clave ? {clave: req.body.clave} : {},
+      ...req.body.telefono ? {telefono: req.body.telefono} : {},
+      ...req.body.nombre_completo ? {nombre_completo: req.body.nombre_completo} : {},
+      ...req.body.email ? {email: req.body.email} : {},
+      ...req.body.genero ? {genero: req.body.genero} : {},
+      ...req.body.admin ? {admin: req.body.admin} : {}
+    }
 
-    data.findUserById(id).then(usuarioModificado => {   
-      if(usuarioModificado.length > 0){
-        let usuario = {
-          login: datos.login || usuarioModificado[0].login,
-          clave: datos.clave || usuarioModificado[0].clave,
-          telefono: datos.telefono || usuarioModificado[0].telefono,
-          nombre_completo: datos.nombre_completo || usuarioModificado[0].nombre_completo,
-          email: datos.email || usuarioModificado[0].email,
-          genero: datos.genero || usuarioModificado[0].genero,
-          admin: datos.admin || usuarioModificado[0].admin
-        } 
-        data.updateUser(id, usuario).then(() => {
-          res.status(200).send("Usuario modificado exitosamente")
-        }).catch(err => {
-          res.status(500).send("Error actualizando usuario: " + err)
-        })
-      }}).catch(err => {
-        res.status(500).send("Error buscando usuario: " + err)
-      })
+    Usuario.actualizarUsuario(id, user).then(() => {
+      res.status(200).send("Usuario modificado exitosamente")
+    }).catch(err => {
+      res.status(500).send("Error actualizando usuario: " + err)
+    })
+    
 });
 
 // Valida que esten todos los campos y agrega al usuario mientras que no se repita el login
-router.post('/agregar/', function(req, res, next) {
+router.post('/', function(req, res, next) {
   if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
     res.status(400).send("Faltan campos para crear el usuario")
   } else {
