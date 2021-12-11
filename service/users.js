@@ -95,6 +95,30 @@ function validarClave(clave){
     return true;
 }
 
+/**
+*
+*/
+function login(params){
+    return new Promise((resolve, reject) => {
+        userModel.findUserByLogin(params.login)
+        .then(user => {
+            if(user){
+                if(user.clave == params.clave){
+                    resolve(user);
+                } else {
+                    reject("La clave es incorrecta");
+                }
+            } else {
+                reject("No se encontró un usuario con ese login");
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
+
 function buscarUsuario(id){
     return new Promise((resolve, reject) => {
         userModel.findUserById(id)
@@ -111,5 +135,6 @@ module.exports = {
     registrarUsuario,
     actualizarUsuario,
     buscarUsuario,
+    login,
     listarUsuarios
 }

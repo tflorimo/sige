@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const data = require('../data/users')
+const Usuario = require('../service/users');
+const key = require('../config/keys');
+const jwt = require('jsonwebtoken');
 
 /* El inicio, retorna una lista de productos tras consultar con la base de datos */
 router.get('/', function(req, res, next) {
@@ -8,24 +10,35 @@ router.get('/', function(req, res, next) {
   res.status(200);
 });
 
-router.post('/login/', async (req, res) => {
-  let login = req.body.login;
-  let clave = req.body.clave;
+router.post('/login', async (req, res) => {
+  let credenciales = req.body;
+
+  if(credenciales.login && credenciales.clave){
+    Usuario.login(credenciales)
+    .then(result => {
+      const payload = {
+        check:true
+      };
+      const token = jwt.sign(payload, key.key, {
+        expiresIn: '1440'
+      });
+
+      res.json({
+        message: 'Login correcto',
+        token: token
+      });
+
+    })
+    .catch(err => {
+      res.json(err);
+    });
+  } else {
+    res.status(400).send({
+      message: 'Faltan ingresar datos!'
+    });
+  }
+
   
-  data.findUserByLogin(login).then(user => {
-    if (user.clave === clave) {
-      const token = data.generateAuthToken(user);
-      console.log(token)
-      res.status(200);
-      res.send(user);
-    } else {
-      res.status(401);
-      res.send('Usuario o clave incorrectos!');
-    }
-  }).catch(err => {
-    res.status(404);
-    res.send("Error al buscar usuario:" + err);
-  })
 });
 
 module.exports = router;
