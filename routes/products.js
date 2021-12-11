@@ -68,23 +68,6 @@ router.get('/categoria/listar/:idcategoria', (req, res) => {
 
 // POSTS
 
-// Compra un producto (restar stock)
-router.post('/comprar/:idproducto/:stock', (req, res) => {
-    data.getProductoById(req.params.idproducto).then(producto => {
-        if(producto[0].stock_disponible >= req.params.stock){
-            data.buyProduct(req.params.idproducto, req.params.stock).then(producto => {
-                res.status(200).json(producto)
-            }).catch(err => {
-                res.status(500).send("Error: " + err)
-            })
-        } else {
-            res.status(402).send("No hay stock suficiente del producto")
-        }
-    }).catch(err => {
-        res.status(404).send("Error: " + err)
-    })
-});
-
 // Valida la existencia de todos los campos que vienen en el body y crea un nuevo producto
 router.post('/', (req, res) => {
     let datos = req.body
@@ -119,6 +102,28 @@ router.post('/categoria/', (req, res) => {
         ).catch(err => {
             res.status(500).send("Error cargando categoria: " + err);
         })
+    }
+});
+
+// Compra un producto (resta la cantidad enviada en el request)
+router.post('/comprar/:idproducto', (req, res) => {
+    let idProducto = req.params.idproducto;
+    let cantidad = req.body.cantidad;
+
+    if(cantidad == null || cantidad == undefined){
+        res.status(400).send("Debe enviar la cantidad a comprar")
+    } else if (cantidad <= 0){
+        res.status(400).send("La cantidad debe ser mayor a 0")
+    } else {
+
+        Producto.comprarProducto(idProducto, cantidad)
+        .then(() => {
+            res.status(200).send("Producto comprado exitosamente.")
+        })
+        .catch(err => {
+            res.status(500).send("Error comprando producto: " + err);
+        });
+
     }
 });
 

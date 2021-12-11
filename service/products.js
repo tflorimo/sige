@@ -141,6 +141,28 @@ const actualizarCategoria = (id, params) => {
     })
 }
 
+const comprarProducto = (idproducto, cantidad) => {
+    return new Promise((resolve, reject) => {
+        productModel.getProductoById(idproducto)
+        .then(producto => {
+            if(producto) {
+                productModel.comprarProducto(idproducto, cantidad)
+                .then(producto => {
+                    resolve("Producto comprado exitosamente.")
+                })
+                .catch(err => {
+                    reject(err);
+                })
+            } else {
+                reject("No existe un producto con esa ID.");
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
 
 const validarDescripcion = (descrip) => {
     if(typeof descrip != "string" || descrip.length < 2) {
@@ -158,5 +180,6 @@ module.exports = {
     agregarCategoria,
     actualizarProducto,
     actualizarCategoria,
+    comprarProducto,
     listarProductosPorCategoria
 }

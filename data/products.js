@@ -192,6 +192,24 @@ class Producto {
 
         })
     }
+
+    // resta del stock disponible la cantidad enviada por parámetro, si la cantidad es mayor al stock disponible, no se puede restar
+    comprarProducto = (idproducto, cantidad) => {
+        return new Promise((resolve, reject) => {
+            conn.query("SELECT stock_disponible FROM productos WHERE idproducto = '" + idproducto + "'", function(err, rows, fields) {
+                if (err) reject(err);
+                if(rows[0].stock_disponible >= cantidad) {
+                    conn.query("UPDATE productos SET stock_disponible = stock_disponible - " + cantidad + " WHERE idproducto = '" + idproducto + "'", function(err, rows, fields) {
+                        if (err) reject(err);
+                        resolve("Producto comprado con éxito!");
+                    });
+                } else {
+                    reject("No hay suficiente stock disponible.");
+                }
+            });
+        });
+    }
+
 }
 
 
