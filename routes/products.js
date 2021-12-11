@@ -144,5 +144,24 @@ router.patch('/:id', (req, res) => {
 });
 
 // Actualiza una categoria
+router.patch('/categoria/:id', (req, res) => {
+
+    let idcategoria = req.params.id;
+
+    let datos = req.body
+
+    let categoria = {
+        ...datos.descrip ? {descrip: datos.descrip} : {},
+    }
+    
+    Producto.actualizarCategoria(idcategoria, categoria)
+    .then(() => {
+        res.status(200).send("Categoria modificada exitosamente.")
+    })
+    .catch(err => {
+        res.status(500).send("Error modificando categoria: " + err);
+    })
+
+});
 
 module.exports = router;

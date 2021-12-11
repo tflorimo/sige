@@ -95,6 +95,24 @@ class Producto {
         });
     }
 
+    updateCategoria = (id, datos) => {
+        return new Promise((resolve, reject) => {
+            if(datos.descrip == " "){
+                reject("Debe ingresar una descripción de categoría.");
+            } else {
+                conn.query("UPDATE productos_categorias SET ? WHERE idcategoria = '" + id + "'", datos, function(err, rows, fields) {
+                    if (err) {
+                        reject(err);
+                    } else if(rows.affectedRows > 0) {
+                        resolve("Categoría modificada con éxito!");
+                    } else {
+                        reject("No se encontró la categoría con ese ID");
+                    }
+                });
+            }
+        });
+    }
+
     // Resta {parametro} stock del producto {id}
     buyProduct = (id, stock) => {
         return new Promise((resolve, reject) => {
