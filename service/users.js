@@ -4,11 +4,10 @@
 const User = require('../data/users');
 const userModel = new User();
 
-
 /**
- * Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, crea un nuevo usuario
- * El usuario no debe existir en la base de datos, de lo contrario se lanzará un error
- */
+* Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, crea un nuevo usuario
+* El usuario no debe existir en la base de datos, de lo contrario se lanzará un error
+*/
 function registrarUsuario(params){
     
     return new Promise((resolve, reject) => {
@@ -34,9 +33,9 @@ function registrarUsuario(params){
 }
 
 /**
- * Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, actualiza los datos de un usuario
- * Para actualizarlo, primero debe encontrarlo por el id que se le pasa como parámetro
- */
+* Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, actualiza los datos de un usuario
+* Para actualizarlo, primero debe encontrarlo por el id que se le pasa como parámetro
+*/
 function actualizarUsuario(id, params){
     return new Promise((resolve, reject) => {
         userModel.findUserById(id)

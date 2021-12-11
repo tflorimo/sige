@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const Usuario = require('../service/users');
-const { authAdmin } = require('../middleware/auth');
 
 // Lista los usuarios que vienen de la base de datos
 router.get('/', (req, res) => {
@@ -32,7 +31,7 @@ router.patch('/:id', (req, res) => {
     }).catch(err => {
       res.status(500).send("Error actualizando usuario: " + err)
     })
-    
+
 });
 
 // Valida que esten todos los campos y agrega al usuario mientras que no se repita el login

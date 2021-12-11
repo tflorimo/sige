@@ -76,7 +76,7 @@ class User {
     // Recibe una ID y un objeto y actualiza el usuario en la base de datos
     updateUser = (id, datos) => {
         return new Promise((resolve, reject) => {
-            // Si admin o genero es mayor a 1 no pasa
+            // Si admin o genero es mayor a 1 (siempre es 0 o 1), no pasa
             if (datos.admin && datos.admin > 1) {
                 reject("El valor de administrador debe ser 1 o 0.");
             } else if (datos.genero && datos.genero > 1) {
