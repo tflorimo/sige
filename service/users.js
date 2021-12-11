@@ -5,6 +5,21 @@ const User = require('../data/users');
 const userModel = new User();
 
 /**
+*  Conecta con el modelo de bases de datos y trae todos los usuarios.
+*/
+function listarUsuarios(){
+    return new Promise((resolve, reject) => {
+        userModel.getUsers()
+        .then(users => {
+            resolve(users);
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
+/**
 * Conecta con el modelo de bases de datos y en caso de que todos los parámetros se cumplan, crea un nuevo usuario
 * El usuario no debe existir en la base de datos, de lo contrario se lanzará un error
 */
@@ -12,6 +27,10 @@ function registrarUsuario(params){
     
     return new Promise((resolve, reject) => {
         
+        if(!validarClave(params.clave)){
+            reject("La clave debe tener al menos 4 caracteres y al menos una letra.");
+        }
+
         userModel.findUserByLogin(params.login)
         .then(user => {
             if(user){
@@ -38,6 +57,11 @@ function registrarUsuario(params){
 */
 function actualizarUsuario(id, params){
     return new Promise((resolve, reject) => {
+
+        if(!validarClave(params.clave)){
+            reject("La clave debe tener al menos 4 caracteres y al menos una letra.");
+        }
+
         userModel.findUserById(id)
         .then(user => {
             if(user){
@@ -58,7 +82,22 @@ function actualizarUsuario(id, params){
     })
 }
 
+/**
+* Valida que el largo de la clave sea mayor a 4 y tenga al menos una letra
+*/
+function validarClave(clave){
+    if(clave.length < 4){
+        return false;
+    }
+    if(/[a-z]/.test(clave) == false){
+        return false;
+    }
+    return true;
+}
+
+
 module.exports = {
     registrarUsuario,
-    actualizarUsuario
+    actualizarUsuario,
+    listarUsuarios
 }

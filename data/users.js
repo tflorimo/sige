@@ -60,12 +60,13 @@ class User {
     getUsers = () => {
         return new Promise((resolve, reject) => {
             conn.query("SELECT login, nombre_completo, admin FROM users", function(err, rows, fields) {
-                if (err) throw err;
-                if(rows.length > 0) {
+                if (err) {
+                    reject(err);
+                } else if(rows.length > 0) {
                     for(let i = 0; i < rows.length; i++) {
                         rows[i].admin = rows[i].admin == 1 ? "Administrador" : "Usuario";
+                        resolve(rows);
                     }
-                    resolve(rows);
                 } else {
                     reject(false);
                 }

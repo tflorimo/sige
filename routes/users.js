@@ -4,12 +4,12 @@ const Usuario = require('../service/users');
 
 // Lista los usuarios que vienen de la base de datos
 router.get('/', (req, res) => {
-    data.getUsers().then(usuarios => {
-        res.json(usuarios)
-    }).catch(err => {
-        res.json({
-            error: err
-        })
+    Usuario.listarUsuarios()
+    .then((data) => {
+        res.status(200).json(data);
+    })
+    .catch((err) => {
+        res.status(500).json(err);
     })
 });
 
@@ -56,8 +56,8 @@ router.post('/', function(req, res, next) {
     }).catch(err => {
       res.status(500).send("Error creando usuario: " + err)
     })
-
   }
+
 });
 
 module.exports = router;
