@@ -95,9 +95,21 @@ function validarClave(clave){
     return true;
 }
 
+function buscarUsuario(id){
+    return new Promise((resolve, reject) => {
+        userModel.findUserById(id)
+        .then(user => {
+            resolve(user);
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
 
 module.exports = {
     registrarUsuario,
     actualizarUsuario,
+    buscarUsuario,
     listarUsuarios
 }

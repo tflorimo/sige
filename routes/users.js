@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 const Usuario = require('../service/users');
 
+// Solo administrador puede acceder a esta ruta
+
 // Lista los usuarios que vienen de la base de datos
 router.get('/', (req, res) => {
     Usuario.listarUsuarios()
@@ -12,6 +14,21 @@ router.get('/', (req, res) => {
         res.status(500).json(err);
     })
 });
+
+// Busca a un usuario por su id.
+router.get('/:id', (req, res ) => {
+  
+  let id = req.params.id;
+  
+  Usuario.buscarUsuario(id)
+  .then((data) => {
+    res.status(200).json(data);
+  })
+  .catch((err) => {
+    res.status(500).json(err);
+  })
+
+})
 
 // Modifica un usuario segun el id que envía en parámetros
 router.patch('/:id', (req, res) => {
@@ -39,7 +56,7 @@ router.post('/', function(req, res, next) {
   if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
     res.status(400).send("Faltan campos para crear el usuario")
   } else {
-    
+
     let user = {
       login: req.body.login,
       clave: req.body.clave,
