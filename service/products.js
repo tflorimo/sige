@@ -65,14 +65,36 @@ const actualizarProducto = (id, params) => {
     })
 }
 
-const comprarProducto = (idproducto, cantidad) => {
+const comprarProducto = (idproducto, cantidad, metodoPago) => {
     return new Promise((resolve, reject) => {
         productModel.getProductoById(idproducto)
         .then(producto => {
             if(producto) {
-                productModel.comprarProducto(idproducto, cantidad)
+                productModel.comprarProducto(idproducto, cantidad, metodoPago)
                 .then(producto => {
-                    resolve("Producto comprado exitosamente.")
+                    resolve(producto);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+            } else {
+                reject("No existe un producto con esa ID.");
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
+const eliminarProducto = (idproducto) => {
+    return new Promise((resolve, reject) => {
+        productModel.getProductoById(idproducto)
+        .then(producto => {
+            if(producto) {
+                productModel.deleteProducto(idproducto)
+                .then(() => {
+                    resolve("Producto eliminado exitosamente.")
                 })
                 .catch(err => {
                     reject(err);
@@ -97,6 +119,7 @@ const validarDescripcion = (descrip) => {
 module.exports = {
     listarProductos,
     buscarProducto,
+    eliminarProducto,
     cargarProducto,
     actualizarProducto,
     comprarProducto

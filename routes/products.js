@@ -56,16 +56,19 @@ router.post('/', checkAuth, checkAdmin,(req, res) => {
 router.post('/comprar/:idproducto', checkAuth, checkUser, (req, res) => {
     let idProducto = req.params.idproducto;
     let cantidad = req.body.cantidad;
+    let metodoPago = req.body.metodoPago;
 
     if(cantidad == null || cantidad == undefined){
         res.status(400).send("Debe enviar la cantidad a comprar")
     } else if (cantidad <= 0){
         res.status(400).send("La cantidad debe ser mayor a 0")
+    } else if (metodoPago == null || metodoPago == undefined || metodoPago <= 0){
+        res.status(400).send("Debe indicar el metodo de pago")
     } else {
-
-        Producto.comprarProducto(idProducto, cantidad)
-        .then(() => {
-            res.status(200).send("Producto comprado exitosamente.")
+        
+        Producto.comprarProducto(idProducto, cantidad, metodoPago)
+        .then(producto => {
+            res.status(200).send(producto)
         })
         .catch(err => {
             res.status(500).send("Error comprando producto: " + err);
@@ -92,6 +95,19 @@ router.patch('/:id', checkAuth, checkAdmin, (req, res) => {
     }).catch(err => {
         res.status(500).send("Error modificando producto: " + err);
     })
+});
+
+// DELETES
+router.delete('/:id', checkAuth, checkAdmin, (req, res) => {
+    let id = req.params.id
+    Producto.eliminarProducto(id)
+    .then(() => {
+        res.status(200).send("Producto eliminado exitosamente.")
+    })
+    .catch(err => {
+        res.status(500).send("Error eliminando producto: " + err);
+    });
+
 });
 
 module.exports = router;

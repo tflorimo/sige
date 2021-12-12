@@ -40,11 +40,7 @@ class Producto {
                 if (err) {
                     reject(err);
                 } else if(rows.length > 0) {
-                    if(rows[0].stock_disponible == 0){ // esto sirve para que no se pueda modificar el producto si no tiene stock (no tendría sentido)
-                        reject("No hay stock del producto " + rows[0].descrip);
-                    } else {
-                        resolve(rows);
-                    }
+                    resolve(rows);
                 } else {
                     reject("No se encontraron productos con ese ID");
                 }
@@ -96,29 +92,77 @@ class Producto {
         });
     }
 
-    // Resta {parametro} stock del producto {id}
-    buyProduct = (id, stock) => {
+    // resta del stock disponible la cantidad enviada por parámetro, si la cantidad es mayor al stock disponible, no se puede restar
+    comprarProducto = (idproducto, cantidad, metodoPago) => {
         return new Promise((resolve, reject) => {
-            conn.query("UPDATE productos SET stock_disponible = stock_disponible - " + stock + " WHERE idproducto = '" + id + "'", function(err, rows, fields) {
-                if (err) reject(err);
-                resolve("Producto comprado con éxito!");
+            // obtiene el metodo de pago de la compra y lo pasa para la lógica
+            this.getMetodoPago(metodoPago)
+            .then(metodo => {
+                let metodoDePago = metodo[0];
+                conn.query("SELECT descrip, precio, stock_disponible FROM productos WHERE idproducto = '" + idproducto + "'", function(err, rows, fields) {
+                    if (err) reject(err);
+                    if(rows[0].stock_disponible >= cantidad) {
+                        let mensaje = "Compra de " + cantidad + " " + rows[0].descrip + " realizada con éxito!\n";
+                        mensaje += "Precio original: " + rows[0].precio + "\n";
+
+                        if(metodoDePago.descuento > 0){
+                            mensaje += "Descuento aplicado: " + metodoDePago.descuento + "% por abonar con metodo de pago " + metodoDePago.descrip + "\n";
+                            rows[0].precio = rows[0].precio - (rows[0].precio * (metodoDePago.descuento / 100));
+                        }
+
+                        if(cantidad < 10){
+                            mensaje += "Recuerde que si compra más de 10 unidades de un producto, se le aplicará un descuento del 10% al total de su compra.\n";
+                        } else {
+                            mensaje += "Se aplica un descuento del 10% por compra mayorista (10 unidades o más).\n";
+                            rows[0].precio = rows[0].precio - (rows[0].precio * (10 / 100));
+                        }
+
+                        mensaje += "Precio final por unidad: " + rows[0].precio + "\n";
+                        mensaje += "Valor total a abonar: " + cantidad * rows[0].precio + "\n";
+                        mensaje += "Gracias por su compra!";
+
+
+                        conn.query("UPDATE productos SET stock_disponible = stock_disponible - " + cantidad + " WHERE idproducto = '" + idproducto + "'", function(err, rows, fields) {
+                            if (err) reject(err);
+                            resolve(mensaje);
+                        });
+                    } else {
+                        reject("No hay suficiente stock disponible.");
+                    }
+                });
+            })
+            .catch(err => {
+                reject(err);
             });
         });
-
     }
 
-    // resta del stock disponible la cantidad enviada por parámetro, si la cantidad es mayor al stock disponible, no se puede restar
-    comprarProducto = (idproducto, cantidad) => {
+    // elimina el producto de la base de datos, pero no deja si tiene stock disponible
+    deleteProducto = (id) => {
         return new Promise((resolve, reject) => {
-            conn.query("SELECT stock_disponible FROM productos WHERE idproducto = '" + idproducto + "'", function(err, rows, fields) {
+            conn.query("SELECT stock_disponible FROM productos WHERE idproducto = '" + id + "'", function(err, rows, fields) {
                 if (err) reject(err);
-                if(rows[0].stock_disponible >= cantidad) {
-                    conn.query("UPDATE productos SET stock_disponible = stock_disponible - " + cantidad + " WHERE idproducto = '" + idproducto + "'", function(err, rows, fields) {
+                if(rows[0].stock_disponible == 0){
+                    conn.query("DELETE FROM productos WHERE idproducto = '" + id + "'", function(err, rows, fields) {
                         if (err) reject(err);
-                        resolve("Producto comprado con éxito!");
+                        resolve("Producto eliminado con éxito!");
                     });
                 } else {
-                    reject("No hay suficiente stock disponible.");
+                    reject("No se puede eliminar el producto, tiene stock disponible.");
+                }
+            });
+        });
+    }
+
+    getMetodoPago = (metodoPago) => {
+        
+        return new Promise((resolve, reject) => {
+            conn.query("SELECT * FROM pago_metodos WHERE idmetodo = '" + metodoPago + "'", function(err, rows, fields) {
+                if (err) reject(err);
+                if(rows.length > 0) {
+                    resolve(rows);
+                } else {
+                    reject("No se encontró el metodo de pago!");
                 }
             });
         });
