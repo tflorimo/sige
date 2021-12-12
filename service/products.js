@@ -15,8 +15,6 @@ const listarProductos = () => {
     })
 }
 
-
-
 const buscarProducto = (idproducto) => {
     return new Promise((resolve, reject) => {
         productModel.getProductoById(idproducto).then(producto => {
