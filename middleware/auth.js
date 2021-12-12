@@ -16,13 +16,7 @@ function checkAuth(req, res, next) {
 	}
 }
 
-function checkAdmin(req, res, next) {
-	// if(req.user.admin == 1){
-	// 	return true;
-	// } else {
-	// 	return false;
-	// }
-	console.log(req);
+async function checkAdmin(req, res, next) {
 	if(req.user.admin == 1){
 		next();
 	} else {

@@ -3,27 +3,23 @@ var router = express.Router();
 const Usuario = require('../service/users');
 const {checkAuth, checkAdmin} = require('../middleware/auth');
 
-// Solo administrador puede acceder a esta ruta
+// Solo los administradores pueden interactuar con esta ruta
 
 // Lista los usuarios que vienen de la base de datos
 router.get('/', checkAuth, checkAdmin, (req, res, next) => {
-    
-    // if(checkAdmin(req)) {
-      Usuario.listarUsuarios()
-      .then((data) => {
-          res.status(200).json(data);
-      })
-      .catch((err) => {
-          res.status(500).json(err);
-      })
-    // } else {
-    //   res.status(401).json({message: 'No autorizado.'});
-    // }
+
+	Usuario.listarUsuarios()
+		.then((data) => {
+			res.status(200).json(data);
+		})
+		.catch((err) => {
+			res.status(500).json(err);
+		})
 
 });
 
 // Busca a un usuario por su id.
-router.get('/:id', (req, res) => {
+router.get('/:id', checkAuth, checkAdmin, (req, res, next) => {
   
   let id = req.params.id;
   
@@ -38,22 +34,22 @@ router.get('/:id', (req, res) => {
 })
 
 // Modifica un usuario segun el id que envía en parámetros
-router.patch('/:id', (req, res) => {
+router.patch('/:id', checkAuth, checkAdmin, (req, res, next) => {
     let id = req.params.id;
     let user = {
-      ...req.body.login ? {login: req.body.login} : {},
-      ...req.body.clave ? {clave: req.body.clave} : {},
-      ...req.body.telefono ? {telefono: req.body.telefono} : {},
-      ...req.body.nombre_completo ? {nombre_completo: req.body.nombre_completo} : {},
-      ...req.body.email ? {email: req.body.email} : {},
-      ...req.body.genero ? {genero: req.body.genero} : {},
-      ...req.body.admin ? {admin: req.body.admin} : {}
+		...req.body.login ? {login: req.body.login} : {},
+		...req.body.clave ? {clave: req.body.clave} : {},
+		...req.body.telefono ? {telefono: req.body.telefono} : {},
+		...req.body.nombre_completo ? {nombre_completo: req.body.nombre_completo} : {},
+		...req.body.email ? {email: req.body.email} : {},
+		...req.body.genero ? {genero: req.body.genero} : {},
+		...req.body.admin ? {admin: req.body.admin} : {}
     }
 
     Usuario.actualizarUsuario(id, user).then(() => {
-      res.status(200).send("Usuario modificado exitosamente")
+		res.status(200).send("Usuario modificado exitosamente")
     }).catch(err => {
-      res.status(500).send("Error actualizando usuario: " + err)
+		res.status(500).send("Error actualizando usuario: " + err)
     })
 
 });
@@ -65,20 +61,20 @@ router.post('/', function(req, res, next) {
   } else {
 
     let user = {
-      login: req.body.login,
-      clave: req.body.clave,
-      telefono: req.body.telefono,
-      nombre_completo: req.body.nombre_completo,
-      email: req.body.email,
-      genero: req.body.genero,
-      admin: req.body.admin
+		login: req.body.login,
+		clave: req.body.clave,
+		telefono: req.body.telefono,
+		nombre_completo: req.body.nombre_completo,
+		email: req.body.email,
+		genero: req.body.genero,
+		admin: req.body.admin
     }  
 
     Usuario.registrarUsuario(user)
-      .then(() => {
-      res.status(200).send("Usuario creado exitosamente")
+	.then(() => {
+		res.status(200).send("Usuario creado exitosamente")
     }).catch(err => {
-      res.status(500).send("Error creando usuario: " + err)
+		res.status(500).send("Error creando usuario: " + err)
     })
   }
 

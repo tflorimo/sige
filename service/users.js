@@ -27,7 +27,7 @@ function registrarUsuario(params){
     
     return new Promise((resolve, reject) => {
         
-        if(!validarClave(params.clave)){
+        if(params.clave && !validarClave(params.clave)){
             reject("La clave debe tener al menos 4 caracteres y al menos una letra.");
         }
 
@@ -59,7 +59,7 @@ function registrarUsuario(params){
 function actualizarUsuario(id, params){
     return new Promise((resolve, reject) => {
 
-        if(!validarClave(params.clave)){
+        if(params.clave && !validarClave(params.clave)){
             reject("La clave debe tener al menos 4 caracteres y al menos una letra.");
         }
 
