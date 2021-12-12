@@ -6,7 +6,7 @@ const {checkAuth, checkUser, checkAdmin} = require('../middleware/auth')
 /**
  * A los endpoints que sean de tipo GET acceden todos los usuarios, al resto de endpoints solo los usuarios autenticados (en algunos depende el tipo de autenticación)
  */
-
+// GETS
 // Lista todos los productos QUE TENGAN STOCK y su categoria
 router.get('/', (req, res) => {
 
