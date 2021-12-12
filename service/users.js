@@ -54,8 +54,10 @@ function registrarUsuario(params){
 */
 function actualizarUsuario(id, params){
     return new Promise((resolve, reject) => {
-
-       userModel.findUserById(id)
+        if(Object.keys(params).length === 0){
+            reject("No se puede actualizar un usuario sin parámetros");
+        }
+        userModel.findUserById(id)
         .then(user => {
             if(user){
                 userModel.updateUser(id, params)
@@ -114,9 +116,22 @@ function buscarUsuario(id){
     })
 }
 
+function eliminarUsuario(id){
+    return new Promise((resolve, reject) => {
+        userModel.deleteUser(id)
+        .then(user => {
+            resolve("Usuario eliminado exitosamente");
+        })
+        .catch(err => {
+            reject(err);
+        })
+    })
+}
+
 module.exports = {
     registrarUsuario,
     actualizarUsuario,
+    eliminarUsuario,
     buscarUsuario,
     login,
     listarUsuarios

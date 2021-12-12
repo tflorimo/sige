@@ -24,16 +24,16 @@ async function checkAdmin(req, res, next) {
 	}
 }
 
-async function user(req, res, next) {
-	if(req.user.admin == 0){
+async function checkUser(req, res, next) {
+	if(req.user.admin == 0 || req.user.admin == 1){ // esto es para que valide que llega un token y valida si es usuario logueado en si
 		next();
 	} else {
-		res.status(401).send('Acceso denegado.');
+		res.status(401).send('Para continuar, debe iniciar sesión.');
 	}
 }
 
 module.exports = {
 	checkAuth,
 	checkAdmin,
-	user
+	checkUser
 }

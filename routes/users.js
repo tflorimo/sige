@@ -3,8 +3,9 @@ var router = express.Router();
 const Usuario = require('../service/users');
 const {checkAuth, checkAdmin} = require('../middleware/auth');
 
-// Solo los administradores pueden interactuar con esta ruta
+// Solo los administradores pueden interactuar con estas rutas
 
+// GETS
 // Lista los usuarios que vienen de la base de datos
 router.get('/', checkAuth, checkAdmin, (req, res, next) => {
 
@@ -33,6 +34,7 @@ router.get('/:id', checkAuth, checkAdmin, (req, res, next) => {
 
 })
 
+// PATCHES
 // Modifica un usuario segun el id que envía en parámetros
 router.patch('/:id', checkAuth, checkAdmin, (req, res, next) => {
     let id = req.params.id;
@@ -54,6 +56,7 @@ router.patch('/:id', checkAuth, checkAdmin, (req, res, next) => {
 
 });
 
+// POSTS
 // Valida que esten todos los campos y agrega al usuario mientras que no se repita el login
 router.post('/', checkAuth, checkAdmin, (req, res, next) => {
 	if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
@@ -79,6 +82,21 @@ router.post('/', checkAuth, checkAdmin, (req, res, next) => {
 			res.status(500).send("Error creando usuario: " + err)
 		})
 	}
+
+});
+
+// DELETES
+// Elimina un usuario segun el id que envía en parámetros
+router.delete('/:id', checkAuth, checkAdmin, (req, res, next) => {
+	let id = req.params.id;
+
+	Usuario.eliminarUsuario(id)
+	.then(() => {
+		res.status(200).send("Usuario eliminado exitosamente")
+	}
+	).catch(err => {
+		res.status(500).send("Error eliminando usuario: " + err)
+	})
 
 });
 

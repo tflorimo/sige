@@ -97,6 +97,19 @@ class User {
         });
     }
 
+    // Recibe una ID y elimina el usuario de la base de datos
+    deleteUser = (id) => {
+        return new Promise((resolve, reject) => {
+            conn.query("DELETE FROM users WHERE idusuario = ?", id, function(err, rows, fields) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve("Usuario eliminado con éxito!");
+                }
+            });
+        });
+    }
+
 }
 
 module.exports = User;

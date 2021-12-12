@@ -4,10 +4,8 @@ const Usuario = require('../service/users');
 const key = require('../config/keys');
 const jwt = require('jsonwebtoken');
 
-/* El inicio, retorna una lista de productos tras consultar con la base de datos */
 router.get('/', function(req, res, next) {
-  res.send('lista de precios')
-  res.status(200);
+  res.status(200).send('Bienvenido a Sitio Genérico de Compra de Hardware Online!');
 });
 
 router.post('/login', async (req, res) => {
@@ -33,8 +31,6 @@ router.post('/login', async (req, res) => {
         message: 'Bienvenido, ' + result.nombre_completo,
         token: token
       });
-
-      
 
     })
     .catch(err => {

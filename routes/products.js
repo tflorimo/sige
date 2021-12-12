@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
 const Producto = require('../service/products')
+const {checkAuth, checkUser, checkAdmin} = require('../middleware/auth')
 
-// Todo el mundo accede a esta ruta
+/**
+ * A los endpoints que sean de tipo GET acceden todos los usuarios, al resto de endpoints solo los usuarios autenticados (en algunos depende el tipo de autenticación)
+ */
 
 // Lista todos los productos QUE TENGAN STOCK y su categoria
 router.get('/', (req, res) => {
@@ -23,56 +26,16 @@ router.get('/:idproducto', (req, res) => {
     Producto.buscarProducto(idproducto).then(producto => {
         res.status(200).json(producto);
     }).catch(err => {
-        res.status(500).send(err);
+        res.status(204).send(err);
     })
-});
-
-// Lista todas las categorias
-router.get('/categoria/', (req,res) => {
-    
-    Producto.listarCategorias().then(categorias => {
-        res.status(200).json(categorias);
-    }).catch(err => {
-        res.status(500).send(err);
-    })
-
-});
-
-router.get('/categoria/:idcategoria', (req, res) => {
-
-    let idcategoria = req.params.idcategoria;
-
-    Producto.obtenerCategoria(idcategoria)
-    .then(categoria => {
-        res.status(200).json(categoria);
-    })
-    .catch(err => {
-        res.status(500).send(err);
-    })
-
-})
-
-// Lista todos los productos para una categoría
-router.get('/categoria/listar/:idcategoria', (req, res) => {
-    
-    let idcategoria = req.params.idcategoria;
-    Producto.listarProductosPorCategoria(idcategoria)
-    .then(productos => {
-        res.status(200).json(productos);
-    })
-    .catch(err => {
-        res.status(500).send(err);
-    })
-
 });
 
 // POSTS
-
 // Valida la existencia de todos los campos que vienen en el body y crea un nuevo producto
-router.post('/', (req, res) => {
+router.post('/', checkAuth, checkAdmin,(req, res) => {
     let datos = req.body
     if(Object.keys(req.body).length < 4){
-        res.status(400).send("Faltan datos")
+        res.status(400).send("Debe ingresar todos los campos para cargar un producto.")
     } else {
         let producto = {
             descrip: datos.descrip,
@@ -89,24 +52,8 @@ router.post('/', (req, res) => {
     }
 });
 
-// Agrega una categoria
-router.post('/categoria/', (req, res) => {
-    let datos = req.body
-    if(Object.keys(req.body).length < 1){
-        res.status(400).send("Faltan datos")
-    } else {
-        let categoria = {descrip: datos.descrip}
-        Producto.agregarCategoria(categoria).then(() => {
-            res.status(200).send("Categoria cargada exitosamente.")
-        }
-        ).catch(err => {
-            res.status(500).send("Error cargando categoria: " + err);
-        })
-    }
-});
-
-// Compra un producto (resta la cantidad enviada en el request)
-router.post('/comprar/:idproducto', (req, res) => {
+// Compra un producto (resta la cantidad enviada en el request). A esta ruta pueden acceder usuarios LOGUEADOS, y ADMINISTRADORES
+router.post('/comprar/:idproducto', checkAuth, checkUser, (req, res) => {
     let idProducto = req.params.idproducto;
     let cantidad = req.body.cantidad;
 
@@ -128,9 +75,8 @@ router.post('/comprar/:idproducto', (req, res) => {
 });
 
 // PATCHES
-
 // Modifica un producto segun su ID y el contenido del body
-router.patch('/:id', (req, res) => {
+router.patch('/:id', checkAuth, checkAdmin, (req, res) => {
     let id = req.params.id
     let datos = req.body
 
@@ -146,27 +92,6 @@ router.patch('/:id', (req, res) => {
     }).catch(err => {
         res.status(500).send("Error modificando producto: " + err);
     })
-});
-
-// Actualiza una categoria
-router.patch('/categoria/:id', (req, res) => {
-
-    let idcategoria = req.params.id;
-
-    let datos = req.body
-
-    let categoria = {
-        ...datos.descrip ? {descrip: datos.descrip} : {},
-    }
-    
-    Producto.actualizarCategoria(idcategoria, categoria)
-    .then(() => {
-        res.status(200).send("Categoria modificada exitosamente.")
-    })
-    .catch(err => {
-        res.status(500).send("Error modificando categoria: " + err);
-    })
-
 });
 
 module.exports = router;
