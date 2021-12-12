@@ -1,25 +1,45 @@
+const key = require('../config/keys');
+const jwt = require('jsonwebtoken');
 
-const jwt =require('jsonwebtoken') ;
-function auth(req, res, next) {
-	try {
-		const token = req.header('Authorization').replace('Bearer ', '');
-		if (!jwt.verify(token, process.env.SECRET)) {
-			jwt.verify(token, process.env.SECRET_ADMIN);
-		}
+// valida que el usuario esté logueado
+function checkAuth(req, res, next) {
+	let token = req.headers.authorization;
+	
+	if (!token) return res.status(401).send('Acceso denegado.');
+	token = token.replace('Bearer ', '');
+	try {	
+		const decoded = jwt.verify(token, key.key);
+		req.user = decoded;
 		next();
-	} catch (error) {
-		res.status(401).send({ error: error.message });
+	} catch (ex) {
+		res.status(400).send('Credenciales inválidas.');
 	}
 }
 
-function authAdmin(req, res, next) {
-	try {
-		const token = req.header('Authorization').replace('Bearer ', '');
-		jwt.verify(token, process.env.SECRET_ADMIN);
+function checkAdmin(req, res, next) {
+	// if(req.user.admin == 1){
+	// 	return true;
+	// } else {
+	// 	return false;
+	// }
+	console.log(req);
+	if(req.user.admin == 1){
 		next();
-	} catch (error) {
-		res.status(401).send({ error: error.message });
+	} else {
+		res.status(401).send('Acceso denegado.');
 	}
 }
 
-module.exports = { auth, authAdmin };
+async function user(req, res, next) {
+	if(req.user.admin == 0){
+		next();
+	} else {
+		res.status(401).send('Acceso denegado.');
+	}
+}
+
+module.exports = {
+	checkAuth,
+	checkAdmin,
+	user
+}

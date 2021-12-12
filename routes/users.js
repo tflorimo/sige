@@ -1,22 +1,29 @@
 var express = require('express');
 var router = express.Router();
 const Usuario = require('../service/users');
+const {checkAuth, checkAdmin} = require('../middleware/auth');
 
 // Solo administrador puede acceder a esta ruta
 
 // Lista los usuarios que vienen de la base de datos
-router.get('/', (req, res) => {
-    Usuario.listarUsuarios()
-    .then((data) => {
-        res.status(200).json(data);
-    })
-    .catch((err) => {
-        res.status(500).json(err);
-    })
+router.get('/', checkAuth, checkAdmin, (req, res, next) => {
+    
+    // if(checkAdmin(req)) {
+      Usuario.listarUsuarios()
+      .then((data) => {
+          res.status(200).json(data);
+      })
+      .catch((err) => {
+          res.status(500).json(err);
+      })
+    // } else {
+    //   res.status(401).json({message: 'No autorizado.'});
+    // }
+
 });
 
 // Busca a un usuario por su id.
-router.get('/:id', (req, res ) => {
+router.get('/:id', (req, res) => {
   
   let id = req.params.id;
   

@@ -49,6 +49,7 @@ function registrarUsuario(params){
             reject(err);
         })
     })
+
 }
 
 /**
@@ -96,7 +97,8 @@ function validarClave(clave){
 }
 
 /**
-*
+* Busca al usuario según el login enviado por parámetros, y en caso de que lo encuentre, compara la clave que también se envía
+* por parámetros en el objeto "params" y compara que sean iguales, 
 */
 function login(params){
     return new Promise((resolve, reject) => {
@@ -118,7 +120,9 @@ function login(params){
     })
 }
 
-
+/**
+ * Conecta con el modelo de bases de datos y busca al usuario según la ID enviada en parámetros
+ */
 function buscarUsuario(id){
     return new Promise((resolve, reject) => {
         userModel.findUserById(id)

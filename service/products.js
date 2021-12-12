@@ -163,7 +163,6 @@ const comprarProducto = (idproducto, cantidad) => {
     })
 }
 
-
 const validarDescripcion = (descrip) => {
     if(typeof descrip != "string" || descrip.length < 2) {
         return false;

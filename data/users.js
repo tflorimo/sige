@@ -29,7 +29,7 @@ class User {
     // Busca un usuario en la base de datos por su login
     findUserByLogin = (login) => {
         return new Promise((resolve, reject) => {
-            conn.query("SELECT idusuario, login, clave, admin FROM users WHERE login = '" + login + "'", function(err, rows, fields) {
+            conn.query("SELECT idusuario, login, clave, nombre_completo, admin FROM users WHERE login = '" + login + "'", function(err, rows, fields) {
                 if (err) {
                     reject(err);
                 } else if (rows.length == 0) {

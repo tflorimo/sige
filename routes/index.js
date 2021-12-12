@@ -16,17 +16,25 @@ router.post('/login', async (req, res) => {
   if(credenciales.login && credenciales.clave){
     Usuario.login(credenciales)
     .then(result => {
+      // Guardo en el payload los resultados que me devuelve la base de datos, solo me interesa
+      // el nombre completo, el id y el rol que tiene el usuario
       const payload = {
-        check:true
+        id: result.id,
+        nombre_completo: result.nombre_completo,
+        admin: result.admin
       };
+
       const token = jwt.sign(payload, key.key, {
-        expiresIn: '1440'
+        expiresIn: '7d' // para testing
       });
 
-      res.json({
-        message: 'Login correcto',
+
+      res.status(200).header("auth-token", token).json({
+        message: 'Bienvenido, ' + result.nombre_completo,
         token: token
       });
+
+
 
     })
     .catch(err => {
