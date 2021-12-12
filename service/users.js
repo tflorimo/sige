@@ -26,10 +26,6 @@ function listarUsuarios(){
 function registrarUsuario(params){
     
     return new Promise((resolve, reject) => {
-        
-        if(params.clave && !validarClave(params.clave)){
-            reject("La clave debe tener al menos 4 caracteres y al menos una letra.");
-        }
 
         userModel.findUserByLogin(params.login)
         .then(user => {
@@ -59,11 +55,7 @@ function registrarUsuario(params){
 function actualizarUsuario(id, params){
     return new Promise((resolve, reject) => {
 
-        if(params.clave && !validarClave(params.clave)){
-            reject("La clave debe tener al menos 4 caracteres y al menos una letra.");
-        }
-
-        userModel.findUserById(id)
+       userModel.findUserById(id)
         .then(user => {
             if(user){
                 userModel.updateUser(id, params)
@@ -81,19 +73,6 @@ function actualizarUsuario(id, params){
             reject(err);
         })
     })
-}
-
-/**
-* Valida que el largo de la clave sea mayor a 4 y tenga al menos una letra
-*/
-function validarClave(clave){
-    if(clave.length < 4){
-        return false;
-    }
-    if(/[a-z]/.test(clave) == false){
-        return false;
-    }
-    return true;
 }
 
 /**

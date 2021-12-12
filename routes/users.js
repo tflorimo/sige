@@ -55,28 +55,30 @@ router.patch('/:id', checkAuth, checkAdmin, (req, res, next) => {
 });
 
 // Valida que esten todos los campos y agrega al usuario mientras que no se repita el login
-router.post('/', function(req, res, next) {
-  if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
-    res.status(400).send("Faltan campos para crear el usuario")
-  } else {
+router.post('/', checkAuth, checkAdmin, (req, res, next) => {
+	if(Object.keys(req.body).length < 7){ // Siempre espero 7 campos
+		res.status(400).send("Faltan campos para crear el usuario")
+	} else if (req.body.clave && req.body.clave.length < 4) {
+		res.status(400).send("La clave debe tener al menos 4 caracteres")
+	} else {
 
-    let user = {
-		login: req.body.login,
-		clave: req.body.clave,
-		telefono: req.body.telefono,
-		nombre_completo: req.body.nombre_completo,
-		email: req.body.email,
-		genero: req.body.genero,
-		admin: req.body.admin
-    }  
+		let user = {
+			login: req.body.login,
+			clave: req.body.clave,
+			telefono: req.body.telefono,
+			nombre_completo: req.body.nombre_completo,
+			email: req.body.email,
+			genero: req.body.genero,
+			admin: req.body.admin
+		}  
 
-    Usuario.registrarUsuario(user)
-	.then(() => {
-		res.status(200).send("Usuario creado exitosamente")
-    }).catch(err => {
-		res.status(500).send("Error creando usuario: " + err)
-    })
-  }
+		Usuario.registrarUsuario(user)
+		.then(() => {
+			res.status(200).send("Usuario creado exitosamente")
+		}).catch(err => {
+			res.status(500).send("Error creando usuario: " + err)
+		})
+	}
 
 });
 
