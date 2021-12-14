@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-11-2021 a las 06:09:53
+-- Tiempo de generación: 14-12-2021 a las 01:31:11
 -- Versión del servidor: 10.1.38-MariaDB
 -- Versión de PHP: 5.6.40
 
@@ -25,6 +25,28 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `pago_metodos`
+--
+
+CREATE TABLE `pago_metodos` (
+  `idmetodo` int(11) NOT NULL,
+  `descrip` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
+  `descuento` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `pago_metodos`
+--
+
+INSERT INTO `pago_metodos` (`idmetodo`, `descrip`, `descuento`) VALUES
+(1, 'Efectivo', 15),
+(2, 'Tarjeta de debito', 5),
+(3, 'Transferencia', 10),
+(4, 'Tarjeta de credito', 0);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `productos`
 --
 
@@ -41,14 +63,17 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`idproducto`, `descrip`, `idcategoria`, `precio`, `stock_disponible`) VALUES
-(1, 'Teclado Keychron K2', 1, 20000, 20),
+(1, 'Teclado Keychron K2V2', 1, 3007, 0),
 (2, 'EVGA NVIDIA GeForce RTX 3060 XC Gaming', 2, 150000, 6),
-(3, 'ASUS TUF Gaming VG27AQ', 3, 134000, 3),
+(3, 'ASUS TUF Gaming VG27AQ', 3, 134000, 80),
 (4, 'Intel Core i7 8700', 4, 47000, 11),
-(5, 'Logitech G502', 1, 6500, 500),
+(5, 'Logitech G502', 1, 3000, 488),
 (6, 'PNY NVIDIA GeForce RTX 2060 Super', 2, 187000, 0),
 (7, 'LG 24MP59G', 3, 184000, 250),
-(8, 'Intel Core i7 10700k', 4, 84000, 8);
+(8, 'Intel Core i7 10700k', 4, 84000, 8),
+(9, 'Kingston HyperX Revolver S', 5, 696, 100),
+(10, 'Bose genericos', 5, 8000, 0),
+(11, 'Kingston HyperX Alloy Blue', 1, 10000, 68);
 
 -- --------------------------------------------------------
 
@@ -69,7 +94,9 @@ INSERT INTO `productos_categorias` (`idcategoria`, `descrip`) VALUES
 (1, 'Perifericos'),
 (2, 'Placas de Video'),
 (3, 'Monitores'),
-(4, 'Procesadores');
+(4, 'Procesadores'),
+(5, 'Auriculares'),
+(6, 'Gabinetes');
 
 -- --------------------------------------------------------
 
@@ -93,13 +120,21 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`idusuario`, `login`, `clave`, `nombre_completo`, `telefono`, `email`, `genero`, `admin`) VALUES
-(1, 'tomasf', '1234', 'Tomas Santiago Florimo', '1234', 'tflorimo@gmail.com', 0, 1),
-(8, 'matias', '1234', 'Matias Siminelakis', '12345', 'msimilenakis@gmail.com', 0, 1),
-(10, 'sarasa', '12345', 'Jose Dan', '12345', 'josedan@gmail.com', 0, 0);
+(10, 'sarasa', '12345', 'Jose Dan', '12345', 'josedan@gmail.com', 0, 0),
+(14, 'juan', '12345', 'Juan Pablo Vercesi', '1599887766', 'juan.vercesi@ort.edu.ar', 0, 0),
+(15, 'scosta', '1234a', 'Siro Costa', '54911234', 'costa.siro@gmail.com', 0, 0),
+(16, 'LRosas', '12345', 'Lucas Rosas', '951357', 'lucas.rosas@pdlc.gob.ar', 0, 0),
+(28, 'tomas', '1234', 'Tomas Florimo', '1140943167', 'tflorimo@gmail.com', 0, 1);
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `pago_metodos`
+--
+ALTER TABLE `pago_metodos`
+  ADD PRIMARY KEY (`idmetodo`);
 
 --
 -- Indices de la tabla `productos`
@@ -125,22 +160,28 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `pago_metodos`
+--
+ALTER TABLE `pago_metodos`
+  MODIFY `idmetodo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `idproducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idproducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `productos_categorias`
 --
 ALTER TABLE `productos_categorias`
-  MODIFY `idcategoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idcategoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
